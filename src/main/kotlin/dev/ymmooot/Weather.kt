@@ -8,6 +8,26 @@ sealed class Weather {
         val CLOUDY = Composable.CLOUDY
         val SNOW = Composable.SNOW
         val RAINY = Composable.RAINY
+
+        fun fromCode(code: Int): Weather {
+            if (code !in 1..30) {
+                throw IllegalArgumentException("code must be between 1 and 30")
+            }
+
+            listOf(SUNNY, CLOUDY, RAINY, SNOW, HEAVY_RAINY, HEAVY_SNOW).firstOrNull { it.code == code }?.let { return it }
+
+            val composables = listOf(SUNNY, CLOUDY, RAINY, SNOW)
+            composables.forEach { w1 ->
+                composables.filter { w1 != it }.forEach {
+                    when (code) {
+                        w1.sometimes(it).code -> return w1.sometimes(it)
+                        w1.then(it).code -> return w1.then(it)
+                    }
+                }
+            }
+
+            throw Exception("something went wrong")
+        }
     }
 
     object HEAVY_RAINY : Weather() { override val code = 22 }
@@ -45,4 +65,3 @@ sealed class Weather {
 
     override operator fun equals(other: Any?) = (other as? Weather)?.let { this.code == it.code } ?: false
 }
-
