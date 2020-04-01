@@ -1,5 +1,6 @@
 package dev.ymmooot
 
+import java.lang.Exception
 import java.net.URL
 
 sealed class Weather {
@@ -9,24 +10,21 @@ sealed class Weather {
         val SNOW = Composable.SNOW
         val RAINY = Composable.RAINY
 
+        val values: List<Weather> by lazy {
+            val composables = listOf(SUNNY, CLOUDY, RAINY, SNOW)
+            listOf(SUNNY, CLOUDY, RAINY, SNOW, HEAVY_SNOW, HEAVY_RAINY) + composables.flatMap { w1 ->
+                composables.filter { w1 != it }.flatMap {
+                    listOf(w1.sometimes(it), w1.then(it))
+                }
+            }
+        }
+
         fun fromCode(code: Int): Weather {
             if (code !in 1..30) {
                 throw IllegalArgumentException("code must be between 1 and 30")
             }
 
-            listOf(SUNNY, CLOUDY, RAINY, SNOW, HEAVY_RAINY, HEAVY_SNOW).firstOrNull { it.code == code }?.let { return it }
-
-            val composables = listOf(SUNNY, CLOUDY, RAINY, SNOW)
-            composables.forEach { w1 ->
-                composables.filter { w1 != it }.forEach {
-                    when (code) {
-                        w1.sometimes(it).code -> return w1.sometimes(it)
-                        w1.then(it).code -> return w1.then(it)
-                    }
-                }
-            }
-
-            throw Exception("something went wrong")
+            return values.firstOrNull { it.code == code } ?: throw Exception("something went wrong")
         }
     }
 
