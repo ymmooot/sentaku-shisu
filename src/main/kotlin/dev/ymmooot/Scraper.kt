@@ -31,8 +31,7 @@ class Scraper(var areaCode: String) {
 
     private fun todayAndTomorrowForecast(html: String): List<WeatherForecast> =
         listOf(".today-weather", ".tomorrow-weather")
-            .map { convertLargeSection(html, it) }
-            .filterNotNull()
+            .mapNotNull { convertLargeSection(html, it) }
 
     private fun convertLargeSection(html: String, selector: String): WeatherForecast? {
             val section = Jsoup.parse(html).select(selector)
@@ -40,7 +39,7 @@ class Scraper(var areaCode: String) {
                 .select(".weather-icon-box>img")
                 .attr("src")
                 .let {
-                    """forecast-days-weather/(?<index>.+)?.png""".toRegex().find(it)?.groups?.get("index")?.value
+                    Regex("forecast-days-weather/(?<index>.+)?.png").find(it)?.groups?.get("index")?.value
                 }
                 ?.removeSuffix("_n")
                 ?.let(Integer::parseInt)
@@ -49,7 +48,7 @@ class Scraper(var areaCode: String) {
                 .select(".left-style")
                 .text()
                 .let {
-                    """ (?<dateString>.+)\(""".toRegex().find(it)?.groups?.get("dateString")?.value
+                    Regex(" (?<dateString>.+)\\(").find(it)?.groups?.get("dateString")?.value
                 }
                 ?.let {
                     LocalDate.parse("${LocalDate.now().year}年$it", DateTimeFormatter.ofPattern("yyyy年MM月dd日"))
@@ -58,7 +57,7 @@ class Scraper(var areaCode: String) {
                 .select(".indexes-icon-box img")
                 .attr("src")
                 .let {
-                    """/icon-large-(?<index>\d).png""".toRegex().find(it)?.groups?.get("index")?.value
+                    Regex("/icon-large-(?<index>\\d).png").find(it)?.groups?.get("index")?.value
                 }
                 ?.let(Integer::parseInt)
                 ?.let { WashingIndex.fromInt(it) } ?: return null
