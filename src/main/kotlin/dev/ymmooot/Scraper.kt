@@ -26,47 +26,51 @@ class Scraper(var areaCode: String) {
             return listOf()
         }
 
-        return convertLargeSectionToIndex(html)
+        return todayAndTomorrowForecast(html)
     }
 
-    private fun convertLargeSectionToIndex(html: String): List<WeatherForecast> =
-        listOf(".today-weather", ".tomorrow-weather").map { selector ->
-                val section = Jsoup.parse(html).select(selector)
-                val weather = section
-                    .select(".weather-icon-box>img")
-                    .attr("src")
-                    .let {
-                        """forecast-days-weather/(?<index>.+)?.png""".toRegex().find(it)?.groups?.get("index")?.value
-                    }
-                    ?.removeSuffix("_n")
-                    ?.let(Integer::parseInt)
-                    ?.let { Weather.fromCode(it) } ?: return@map null
-                val date = section
-                    .select(".left-style")
-                    .text()
-                    .let {
-                        """ (?<dateString>.+)\(""".toRegex().find(it)?.groups?.get("dateString")?.value
-                    }
-                    ?.let {
-                        LocalDate.parse("${LocalDate.now().year}年$it", DateTimeFormatter.ofPattern("yyyy年MM月dd日"))
-                    } ?: return@map null
-                val washingIndex = section
-                    .select(".indexes-icon-box img")
-                    .attr("src")
-                    .let {
-                        """/icon-large-(?<index>\d).png""".toRegex().find(it)?.groups?.get("index")?.value
-                    }
-                    ?.let(Integer::parseInt)
-                    ?.let { WashingIndex.fromInt(it) } ?: return@map null
+    private fun todayAndTomorrowForecast(html: String): List<WeatherForecast> =
+        listOf(".today-weather", ".tomorrow-weather")
+            .map { convertLargeSection(html, it) }
+            .filterNotNull()
 
-                WeatherForecast(
-                    date = date,
-                    weather = weather,
-                    washingIndex = washingIndex,
-                    maxTemperature = section.select(".high-temp").text().removeSuffix("℃").toInt(),
-                    minTemperature = section.select(".low-temp").text().removeSuffix("℃").toInt(),
-                    chanceOfRain = section.select(".precip").text().removeSuffix("%").toInt(),
-                    advise = section.select(".indexes-telop-1").text()
-                )
-        }.filterNotNull()
+    private fun convertLargeSection(html: String, selector: String): WeatherForecast? {
+            val section = Jsoup.parse(html).select(selector)
+            val weather = section
+                .select(".weather-icon-box>img")
+                .attr("src")
+                .let {
+                    """forecast-days-weather/(?<index>.+)?.png""".toRegex().find(it)?.groups?.get("index")?.value
+                }
+                ?.removeSuffix("_n")
+                ?.let(Integer::parseInt)
+                ?.let { Weather.fromCode(it) } ?: return null
+            val date = section
+                .select(".left-style")
+                .text()
+                .let {
+                    """ (?<dateString>.+)\(""".toRegex().find(it)?.groups?.get("dateString")?.value
+                }
+                ?.let {
+                    LocalDate.parse("${LocalDate.now().year}年$it", DateTimeFormatter.ofPattern("yyyy年MM月dd日"))
+                } ?: return null
+            val washingIndex = section
+                .select(".indexes-icon-box img")
+                .attr("src")
+                .let {
+                    """/icon-large-(?<index>\d).png""".toRegex().find(it)?.groups?.get("index")?.value
+                }
+                ?.let(Integer::parseInt)
+                ?.let { WashingIndex.fromInt(it) } ?: return null
+
+            return WeatherForecast(
+                date = date,
+                weather = weather,
+                washingIndex = washingIndex,
+                maxTemperature = section.select(".high-temp").text().removeSuffix("℃").toInt(),
+                minTemperature = section.select(".low-temp").text().removeSuffix("℃").toInt(),
+                chanceOfRain = section.select(".precip").text().removeSuffix("%").toInt(),
+                advise = section.select(".indexes-telop-1").text()
+            )
+        }
     }
