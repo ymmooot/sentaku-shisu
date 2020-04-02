@@ -9,7 +9,7 @@ Set the env variables.
 
 | Key              | Note                                         |
 | ---------------- | -------------------------------------------- |
-| AREA_CODE        | tenki.jp area code                           |
+| AREA_CODE        | [tenki.jp](https://tenki.jp/) area code      |
 | SEND_URL         | endpoint url of Discord or Slack             |
 
 ```bash

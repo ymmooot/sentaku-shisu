@@ -1,9 +1,9 @@
 package dev.ymmooot.entity
 
-import java.net.URL
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.net.URL
 
 class WashingIndexTest {
 
@@ -24,7 +24,7 @@ class WashingIndexTest {
 
     @Test
     fun `fromInt throws an error when argument is out of range`() {
-        val exception = assertThrows<IllegalArgumentException> ("Should throw an exception") {
+        val exception = assertThrows<IllegalArgumentException>("Should throw an exception") {
             WashingIndex.fromInt(6)
         }
         assertEquals("Level must be between 1 and 5", exception.message)

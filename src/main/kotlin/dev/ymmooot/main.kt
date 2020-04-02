@@ -1,12 +1,11 @@
 package dev.ymmooot
 
 import dev.ymmooot.sender.Discord
-import java.lang.Exception
 import java.net.URI
 import kotlin.system.exitProcess
 
 fun mustGetEnv(key: String): String =
-    System.getenv(key) ?: throw Exception("environmental variables not found: $key")
+        System.getenv(key) ?: throw Exception("environmental variables not found: $key")
 
 fun main(args: Array<String>) {
     val scraper = Scraper(mustGetEnv("AREA_CODE"))

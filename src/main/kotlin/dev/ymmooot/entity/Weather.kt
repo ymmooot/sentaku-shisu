@@ -1,6 +1,5 @@
 package dev.ymmooot.entity
 
-import java.lang.Exception
 import java.net.URL
 
 sealed class Weather {
@@ -12,18 +11,18 @@ sealed class Weather {
 
         val values: List<Weather> by lazy {
             val composables = listOf(
-                SUNNY,
-                CLOUDY,
-                RAINY,
-                SNOW
+                    SUNNY,
+                    CLOUDY,
+                    RAINY,
+                    SNOW
             )
             listOf(
-                SUNNY,
-                CLOUDY,
-                RAINY,
-                SNOW,
-                HEAVY_SNOW,
-                HEAVY_RAINY
+                    SUNNY,
+                    CLOUDY,
+                    RAINY,
+                    SNOW,
+                    HEAVY_SNOW,
+                    HEAVY_RAINY
             ) + composables.flatMap { w1 ->
                 composables.filter { w1 != it }.flatMap {
                     listOf(w1.sometimes(it), w1.then(it))
@@ -40,14 +39,20 @@ sealed class Weather {
         }
     }
 
-    object HEAVY_RAINY : Weather() { override val code = 22 }
-    object HEAVY_SNOW : Weather() { override val code = 30 }
+    object HEAVY_RAINY : Weather() {
+        override val code = 22
+    }
+
+    object HEAVY_SNOW : Weather() {
+        override val code = 30
+    }
 
     sealed class Composable(override val code: Int, private val codeStep: Int) : Weather() {
         infix fun sometimes(after: Composable): Weather =
-            Composition.Sometimes(this, after)
+                Composition.Sometimes(this, after)
+
         infix fun then(after: Composable): Weather =
-            Composition.Then(this, after)
+                Composition.Then(this, after)
 
         private sealed class Composition(val before: Composable, val after: Composable, val step: Int, val jp: String, val connectionEmoji: String) : Weather() {
             init {
@@ -58,7 +63,9 @@ sealed class Weather {
 
             override val code
                 get() = (before.code + after.codeStep + step).let { code ->
-                    if (before.code < after.code) { code - 1 } else code
+                    if (before.code < after.code) {
+                        code - 1
+                    } else code
                 }
             override val japanese
                 get() = "${before.japanese}$jp${after.japanese}"

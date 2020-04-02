@@ -3,7 +3,7 @@ package dev.ymmooot.viewmodels
 import com.fasterxml.jackson.annotation.JsonIgnore
 import dev.ymmooot.entity.WeatherForecast
 import java.time.format.DateTimeFormatter
-import java.util.Locale
+import java.util.*
 
 data class Attachment(@JsonIgnore val forecast: WeatherForecast) {
     val color = forecast.washingIndex.color
@@ -12,21 +12,21 @@ data class Attachment(@JsonIgnore val forecast: WeatherForecast) {
     val title = "**${forecast.washingIndex}**"
     val text = forecast.advise
     val fields = listOf(
-        Field(
-            "天気",
-            "${forecast.weather.japanese} ${forecast.weather.emoji}",
-            true
-        ),
-        Field(
-            "気温",
-            "${forecast.maxTemperature}℃ / ${forecast.minTemperature}℃",
-            true
-        ),
-        Field(
-            "降水確率",
-            "${forecast.chanceOfRain}%",
-            true
-        )
+            Field(
+                    "天気",
+                    "${forecast.weather.japanese} ${forecast.weather.emoji}",
+                    true
+            ),
+            Field(
+                    "気温",
+                    "${forecast.maxTemperature}℃ / ${forecast.minTemperature}℃",
+                    true
+            ),
+            Field(
+                    "降水確率",
+                    "${forecast.chanceOfRain}%",
+                    true
+            )
     )
     val thumbUrl = forecast.washingIndex.image
     val footer = "tenki.jp\n${forecast.publishedAt.format(DateTimeFormatter.ofPattern("d日H時"))} 発表"

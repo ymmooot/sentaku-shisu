@@ -1,9 +1,9 @@
 package dev.ymmooot.entity
 
-import java.net.URL
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.net.URL
 
 class WeatherTest {
 
@@ -51,7 +51,7 @@ class WeatherTest {
 
     @Test
     fun `can not combine same weather`() {
-        val exception = assertThrows<IllegalArgumentException> ("Should throw an exception") {
+        val exception = assertThrows<IllegalArgumentException>("Should throw an exception") {
             Weather.SUNNY.sometimes(Weather.SUNNY)
         }
         assertThat(exception.message).isEqualTo("before and after must not be same weather")
@@ -60,19 +60,19 @@ class WeatherTest {
     @Test
     fun testInfixFunctions() {
         assertThat(Weather.SNOW sometimes Weather.SUNNY).isEqualTo(
-            Weather.SNOW.sometimes(Weather.SUNNY))
+                Weather.SNOW.sometimes(Weather.SUNNY))
         assertThat(Weather.SNOW.then(Weather.SUNNY)).isEqualTo(
-            Weather.SNOW then Weather.SUNNY)
+                Weather.SNOW then Weather.SUNNY)
     }
 
     @Test
     fun testFromCode() {
         assertThat(Weather.fromCode(1)).isEqualTo(Weather.SUNNY)
         assertThat(Weather.fromCode(24)).isEqualTo(
-            Weather.SNOW.sometimes(
-                Weather.SUNNY))
+                Weather.SNOW.sometimes(
+                        Weather.SUNNY))
         assertThat(Weather.fromCode(27)).isEqualTo(
-            Weather.SNOW.then(
-                Weather.SUNNY))
+                Weather.SNOW.then(
+                        Weather.SUNNY))
     }
 }

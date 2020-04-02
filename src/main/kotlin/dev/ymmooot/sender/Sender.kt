@@ -15,10 +15,10 @@ abstract class Sender {
     }
 
     protected fun toBodyJsonString(forecasts: List<WeatherForecast>): String =
-        forecasts
-            .map { Attachment(it) }
-            .let {
-                Body(forecasts.first().areaName, it)
-            }
-            .let(objectMapper::writeValueAsString)
+            forecasts
+                    .map { Attachment(it) }
+                    .let {
+                        Body(forecasts.first().areaName, it)
+                    }
+                    .let(objectMapper::writeValueAsString)
 }

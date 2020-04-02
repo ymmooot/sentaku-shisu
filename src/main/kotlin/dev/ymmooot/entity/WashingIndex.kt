@@ -14,25 +14,26 @@ enum class WashingIndex(val value: Int) {
 
     override fun toString(): String =
             when (this) {
-        ONE -> "部屋干し推奨"
-        TWO -> "やや乾く"
-        THREE -> "乾く"
-        FOUR -> "よく乾く"
-        FIVE -> "大変よく乾く"
-    }
+                ONE -> "部屋干し推奨"
+                TWO -> "やや乾く"
+                THREE -> "乾く"
+                FOUR -> "よく乾く"
+                FIVE -> "大変よく乾く"
+            }
 
     val color: String
-    get() =
-        when (this) {
-            ONE -> "#9957aa"
-            TWO -> "#72ccea"
-            THREE -> "#5ec388"
-            FOUR -> "#ecbf72"
-            FIVE -> "#d66a66"
-        }
+        get() =
+            when (this) {
+                ONE -> "#9957aa"
+                TWO -> "#72ccea"
+                THREE -> "#5ec388"
+                FOUR -> "#ecbf72"
+                FIVE -> "#d66a66"
+            }
 
     companion object {
         fun fromInt(index: Int): WashingIndex =
-            values().firstOrNull { it.value == index } ?: throw IllegalArgumentException("Level must be between 1 and 5")
-        }
+                values().firstOrNull { it.value == index }
+                        ?: throw IllegalArgumentException("Level must be between 1 and 5")
+    }
 }
