@@ -9,7 +9,7 @@ data class Attachment(@JsonIgnore val forecast: WeatherForecast) {
     val color = forecast.washingIndex.color
     val authorName: String = forecast.date.format(DateTimeFormatter.ofPattern("M月d日(E)", Locale.JAPANESE))
     val authorLink = "https://tenki.jp/indexes/cloth_dried/${forecast.areaCode}"
-    val title = "**${forecast.washingIndex}**"
+    val title = forecast.washingIndex.toString()
     val text = forecast.advise
     val fields = listOf(
             Field(
