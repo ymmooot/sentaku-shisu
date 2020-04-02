@@ -67,13 +67,13 @@ sealed class Weather {
                         code - 1
                     } else code
                 }
-            override val japanese
-                get() = "${before.japanese}$jp${after.japanese}"
+
+            override fun toString(): String = "$before$jp$after"
             override val emoji
                 get() = "${before.emoji}$connectionEmoji${after.emoji}"
 
-            class Sometimes(before: Composable, after: Composable) : Composition(before, after, 0, "時々", ":arrow_right:")
-            class Then(before: Composable, after: Composable) : Composition(before, after, 3, "のち", "")
+            class Sometimes(before: Composable, after: Composable) : Composition(before, after, 0, "時々", "")
+            class Then(before: Composable, after: Composable) : Composition(before, after, 3, "のち", ":arrow_right:")
         }
 
         object SUNNY : Composable(1, 1)
@@ -89,16 +89,15 @@ sealed class Weather {
 
     override operator fun equals(other: Any?) = (other as? Weather)?.let { this.code == it.code } ?: false
 
-    open val japanese: String
-        get() = when (this) {
-            SUNNY -> "晴れ"
-            CLOUDY -> "曇り"
-            RAINY -> "雨"
-            SNOW -> "雪"
-            HEAVY_RAINY -> "大雨"
-            HEAVY_SNOW -> "大雪"
-            else -> ""
-        }
+    override fun toString(): String = when (this) {
+        SUNNY -> "晴れ"
+        CLOUDY -> "曇り"
+        RAINY -> "雨"
+        SNOW -> "雪"
+        HEAVY_RAINY -> "大雨"
+        HEAVY_SNOW -> "大雪"
+        else -> ""
+    }
 
     open val emoji: String
         get() = when (this) {

@@ -14,7 +14,7 @@ data class Attachment(@JsonIgnore val forecast: WeatherForecast) {
     val fields = listOf(
             Field(
                     "天気",
-                    "${forecast.weather.japanese} ${forecast.weather.emoji}",
+                    "${forecast.weather} ${forecast.weather.emoji}",
                     true
             ),
             Field(

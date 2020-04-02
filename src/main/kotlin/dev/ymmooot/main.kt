@@ -1,6 +1,6 @@
 package dev.ymmooot
 
-import dev.ymmooot.sender.Discord
+import dev.ymmooot.sender.DiscordAndSlack
 import java.net.URI
 import kotlin.system.exitProcess
 
@@ -10,7 +10,7 @@ fun mustGetEnv(key: String): String =
 fun main(args: Array<String>) {
     val scraper = Scraper(mustGetEnv("AREA_CODE"))
     val uri = mustGetEnv("SEND_URL")
-    val sender = Discord(URI.create(uri))
+    val sender = DiscordAndSlack(URI.create(uri))
     val response = try {
         val forecast = scraper.fetchForecast()
         sender.send(forecast)

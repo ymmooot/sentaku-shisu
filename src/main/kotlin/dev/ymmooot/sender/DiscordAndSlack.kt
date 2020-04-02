@@ -7,7 +7,7 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
 
-class Discord(val endpoint: URI) : Sender() {
+class DiscordAndSlack(private val endpoint: URI) : Sender() {
     override fun send(forecasts: List<WeatherForecast>): String {
         val body = this.toBodyJsonString(forecasts)
         val request = HttpRequest.newBuilder()
