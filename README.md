@@ -1,6 +1,8 @@
-洗濯指数お知らせくん
+# sentaku-shisu
 
-# Usage
+Notify Slack and Discord of forecast how dry the laundry.
+
+## Usage
 
 Set the env variables.  
 [direnv](https://github.com/direnv/direnv) will help you.
