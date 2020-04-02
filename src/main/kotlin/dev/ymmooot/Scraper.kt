@@ -1,6 +1,6 @@
 package dev.ymmooot
 
-import dev.ymmooot.entity.WashingIndex
+import dev.ymmooot.entity.LaundryIndex
 import dev.ymmooot.entity.Weather
 import dev.ymmooot.entity.WeatherForecast
 import org.jsoup.Jsoup
@@ -74,19 +74,19 @@ class Scraper(var areaCode: String) {
                     LocalDate.parse("${LocalDate.now().year}年$it", DateTimeFormatter.ofPattern("yyyy年MM月dd日"))
                 } ?: throw Exception("failed to extract date from HTML")
 
-        val washingIndex = section
+        val laundryIndex = section
                 .select(".indexes-icon-box img")
                 .attr("src")
                 .let {
                     Regex("/icon-large-(?<index>\\d).png").find(it)?.groups?.get("index")?.value
                 }
                 ?.let(Integer::parseInt)
-                ?.let { WashingIndex.fromInt(it) } ?: throw Exception("failed to extract washing index from HTML")
+                ?.let { LaundryIndex.fromInt(it) } ?: throw Exception("failed to extract laundry index from HTML")
 
         return WeatherForecast(
                 date = date,
                 weather = weather,
-                washingIndex = washingIndex,
+                laundryIndex = laundryIndex,
                 maxTemperature = section.select(".high-temp").text().removeSuffix("℃").toInt(),
                 minTemperature = section.select(".low-temp").text().removeSuffix("℃").toInt(),
                 chanceOfRain = section.select(".precip").text().removeSuffix("%").toInt(),

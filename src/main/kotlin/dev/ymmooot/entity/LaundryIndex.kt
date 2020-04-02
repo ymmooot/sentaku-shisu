@@ -2,7 +2,7 @@ package dev.ymmooot.entity
 
 import java.net.URL
 
-enum class WashingIndex(val value: Int) {
+enum class LaundryIndex(val value: Int) {
     ONE(1),
     TWO(2),
     THREE(3),
@@ -32,7 +32,7 @@ enum class WashingIndex(val value: Int) {
             }
 
     companion object {
-        fun fromInt(index: Int): WashingIndex =
+        fun fromInt(index: Int): LaundryIndex =
                 values().firstOrNull { it.value == index }
                         ?: throw IllegalArgumentException("Level must be between 1 and 5")
     }

@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 data class WeatherForecast(
         val date: LocalDate,
         val weather: Weather,
-        val washingIndex: WashingIndex,
+        val laundryIndex: LaundryIndex,
         val advise: String,
         val chanceOfRain: Int,
         val maxTemperature: Int,
