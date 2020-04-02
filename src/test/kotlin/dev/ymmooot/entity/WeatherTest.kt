@@ -1,4 +1,4 @@
-package dev.ymmooot
+package dev.ymmooot.entity
 
 import java.net.URL
 import org.assertj.core.api.Assertions.assertThat
@@ -59,14 +59,20 @@ class WeatherTest {
 
     @Test
     fun testInfixFunctions() {
-        assertThat(Weather.SNOW sometimes Weather.SUNNY).isEqualTo(Weather.SNOW.sometimes(Weather.SUNNY))
-        assertThat(Weather.SNOW.then(Weather.SUNNY)).isEqualTo(Weather.SNOW then Weather.SUNNY)
+        assertThat(Weather.SNOW sometimes Weather.SUNNY).isEqualTo(
+            Weather.SNOW.sometimes(Weather.SUNNY))
+        assertThat(Weather.SNOW.then(Weather.SUNNY)).isEqualTo(
+            Weather.SNOW then Weather.SUNNY)
     }
 
     @Test
     fun testFromCode() {
         assertThat(Weather.fromCode(1)).isEqualTo(Weather.SUNNY)
-        assertThat(Weather.fromCode(24)).isEqualTo(Weather.SNOW.sometimes(Weather.SUNNY))
-        assertThat(Weather.fromCode(27)).isEqualTo(Weather.SNOW.then(Weather.SUNNY))
+        assertThat(Weather.fromCode(24)).isEqualTo(
+            Weather.SNOW.sometimes(
+                Weather.SUNNY))
+        assertThat(Weather.fromCode(27)).isEqualTo(
+            Weather.SNOW.then(
+                Weather.SUNNY))
     }
 }

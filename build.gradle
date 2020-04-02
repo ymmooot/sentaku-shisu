@@ -12,6 +12,8 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile 'org.jsoup:jsoup:1.10.3'
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.10.2"
+
     testImplementation("org.junit.jupiter:junit-jupiter:5.6.1")
     testCompile 'org.assertj:assertj-core:3.15.0'
 }

@@ -1,4 +1,4 @@
-package dev.ymmooot
+package dev.ymmooot.entity
 
 import java.lang.Exception
 import java.net.URL
@@ -11,8 +11,20 @@ sealed class Weather {
         val RAINY = Composable.RAINY
 
         val values: List<Weather> by lazy {
-            val composables = listOf(SUNNY, CLOUDY, RAINY, SNOW)
-            listOf(SUNNY, CLOUDY, RAINY, SNOW, HEAVY_SNOW, HEAVY_RAINY) + composables.flatMap { w1 ->
+            val composables = listOf(
+                SUNNY,
+                CLOUDY,
+                RAINY,
+                SNOW
+            )
+            listOf(
+                SUNNY,
+                CLOUDY,
+                RAINY,
+                SNOW,
+                HEAVY_SNOW,
+                HEAVY_RAINY
+            ) + composables.flatMap { w1 ->
                 composables.filter { w1 != it }.flatMap {
                     listOf(w1.sometimes(it), w1.then(it))
                 }
@@ -32,10 +44,12 @@ sealed class Weather {
     object HEAVY_SNOW : Weather() { override val code = 30 }
 
     sealed class Composable(override val code: Int, private val codeStep: Int) : Weather() {
-        infix fun sometimes(after: Composable): Weather = Composition.Sometimes(this, after)
-        infix fun then(after: Composable): Weather = Composition.Then(this, after)
+        infix fun sometimes(after: Composable): Weather =
+            Composition.Sometimes(this, after)
+        infix fun then(after: Composable): Weather =
+            Composition.Then(this, after)
 
-        private sealed class Composition(val before: Composable, val after: Composable, val step: Int) : Weather() {
+        private sealed class Composition(val before: Composable, val after: Composable, val step: Int, val jp: String, val connectionEmoji: String) : Weather() {
             init {
                 if (before == after) {
                     throw IllegalArgumentException("before and after must not be same weather")
@@ -46,8 +60,13 @@ sealed class Weather {
                 get() = (before.code + after.codeStep + step).let { code ->
                     if (before.code < after.code) { code - 1 } else code
                 }
-            class Sometimes(before: Composable, after: Composable) : Composition(before, after, 0)
-            class Then(before: Composable, after: Composable) : Composition(before, after, 3)
+            override val japanese
+                get() = "${before.japanese}$jp${after.japanese}"
+            override val emoji
+                get() = "${before.emoji}$connectionEmoji${after.emoji}"
+
+            class Sometimes(before: Composable, after: Composable) : Composition(before, after, 0, "時々", ":arrow_right:")
+            class Then(before: Composable, after: Composable) : Composition(before, after, 3, "のち", "")
         }
 
         object SUNNY : Composable(1, 1)
@@ -62,4 +81,26 @@ sealed class Weather {
     }
 
     override operator fun equals(other: Any?) = (other as? Weather)?.let { this.code == it.code } ?: false
+
+    open val japanese: String
+        get() = when (this) {
+            SUNNY -> "晴れ"
+            CLOUDY -> "曇り"
+            RAINY -> "雨"
+            SNOW -> "雪"
+            HEAVY_RAINY -> "大雨"
+            HEAVY_SNOW -> "大雪"
+            else -> ""
+        }
+
+    open val emoji: String
+        get() = when (this) {
+            SUNNY -> ":sunny:"
+            CLOUDY -> ":cloud:"
+            RAINY -> ":umbrella2:"
+            SNOW -> ":snowman:"
+            HEAVY_RAINY -> ":umbrella:"
+            HEAVY_SNOW -> ":snowman2:"
+            else -> ""
+        }
 }

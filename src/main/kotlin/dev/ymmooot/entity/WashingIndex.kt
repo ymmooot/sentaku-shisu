@@ -1,4 +1,4 @@
-package dev.ymmooot
+package dev.ymmooot.entity
 
 import java.net.URL
 
@@ -20,6 +20,16 @@ enum class WashingIndex(val value: Int) {
         FOUR -> "よく乾く"
         FIVE -> "大変よく乾く"
     }
+
+    val color: String
+    get() =
+        when (this) {
+            ONE -> "#9957aa"
+            TWO -> "#72ccea"
+            THREE -> "#5ec388"
+            FOUR -> "#ecbf72"
+            FIVE -> "#d66a66"
+        }
 
     companion object {
         fun fromInt(index: Int): WashingIndex =

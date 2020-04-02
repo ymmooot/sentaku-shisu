@@ -1,11 +1,15 @@
 package dev.ymmooot
 
+import dev.ymmooot.entity.WashingIndex
+import dev.ymmooot.entity.Weather
+import dev.ymmooot.entity.WeatherForecast
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import org.jsoup.Jsoup
 
@@ -14,26 +18,41 @@ class Scraper(var areaCode: String) {
     private val endpoint: URI
         get() = URI.create("$endpointBase$areaCode")
 
-    fun fetchWashingIndex(): List<WeatherForecast> {
-        val html: String = try {
-            val request = HttpRequest
-                .newBuilder(this.endpoint)
-                .build()
-            val bodyHandler = HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
-            val response: HttpResponse<String> = HttpClient.newBuilder().build().send(request, bodyHandler)
-            response.body()
-        } catch (e: Exception) {
-            return listOf()
-        }
+    fun fetchForecast(): List<WeatherForecast> {
+        val request = HttpRequest
+            .newBuilder(this.endpoint)
+            .build()
+        val bodyHandler = HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
+        val response: HttpResponse<String> = HttpClient.newBuilder().build().send(request, bodyHandler)
+        val html: String = response.body()
 
-        return todayAndTomorrowForecast(html)
+        val areaName = extractAreaName(html)
+        val publishedAt = extractPublishedAt(html)
+
+        return todayAndTomorrowForecast(html, areaName, publishedAt)
     }
 
-    private fun todayAndTomorrowForecast(html: String): List<WeatherForecast> =
+    private fun todayAndTomorrowForecast(html: String, areaName: String, publishedAt: LocalDateTime): List<WeatherForecast> =
         listOf(".today-weather", ".tomorrow-weather")
-            .mapNotNull { convertLargeSection(html, it) }
+            .map { convertLargeSection(html, it, areaName, publishedAt) }
 
-    private fun convertLargeSection(html: String, selector: String): WeatherForecast? {
+    private fun extractAreaName(html: String): String =
+        Jsoup.parse(html)
+            .select("h2")
+            .text()
+            .let {
+                Regex("(?<area>.+)の洗濯指数").find(it)?.groups?.get("area")?.value
+            } ?: throw Exception("area name was not found")
+
+    private fun extractPublishedAt(html: String): LocalDateTime =
+        Jsoup.parse(html)
+            .select("h2>.date-time")
+            .attr("datetime")
+            .let {
+                LocalDateTime.parse(it, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            } ?: throw Exception("published time was not found")
+
+    private fun convertLargeSection(html: String, selector: String, areaName: String, publishedAt: LocalDateTime): WeatherForecast {
             val section = Jsoup.parse(html).select(selector)
             val weather = section
                 .select(".weather-icon-box>img")
@@ -43,7 +62,8 @@ class Scraper(var areaCode: String) {
                 }
                 ?.removeSuffix("_n")
                 ?.let(Integer::parseInt)
-                ?.let { Weather.fromCode(it) } ?: return null
+                ?.let { Weather.fromCode(it) } ?: throw Exception("failed to extract weather from HTML")
+
             val date = section
                 .select(".left-style")
                 .text()
@@ -52,7 +72,8 @@ class Scraper(var areaCode: String) {
                 }
                 ?.let {
                     LocalDate.parse("${LocalDate.now().year}年$it", DateTimeFormatter.ofPattern("yyyy年MM月dd日"))
-                } ?: return null
+                } ?: throw Exception("failed to extract date from HTML")
+
             val washingIndex = section
                 .select(".indexes-icon-box img")
                 .attr("src")
@@ -60,7 +81,7 @@ class Scraper(var areaCode: String) {
                     Regex("/icon-large-(?<index>\\d).png").find(it)?.groups?.get("index")?.value
                 }
                 ?.let(Integer::parseInt)
-                ?.let { WashingIndex.fromInt(it) } ?: return null
+                ?.let { WashingIndex.fromInt(it) } ?: throw Exception("failed to extract washing index from HTML")
 
             return WeatherForecast(
                 date = date,
@@ -69,7 +90,10 @@ class Scraper(var areaCode: String) {
                 maxTemperature = section.select(".high-temp").text().removeSuffix("℃").toInt(),
                 minTemperature = section.select(".low-temp").text().removeSuffix("℃").toInt(),
                 chanceOfRain = section.select(".precip").text().removeSuffix("%").toInt(),
-                advise = section.select(".indexes-telop-1").text()
+                advise = section.select(".indexes-telop-1").text(),
+                areaCode = this.areaCode,
+                areaName = areaName,
+                publishedAt = publishedAt
             )
         }
     }
