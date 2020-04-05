@@ -11,7 +11,7 @@ fun main(args: Array<String>) {
     val scraper = Scraper(env.areaCode)
     val sender = Sender(URI.create(env.endpointURL))
     val response = try {
-        val forecasts = scraper.fetchForecast()
+        val forecasts = scraper.fetchForecast(env.onlyTomorrow)
         val body = Body(forecasts, env.iconURL)
         sender.send(body)
     } catch (e: Exception) {

@@ -12,6 +12,7 @@ Set the env variables.
 | AREA_CODE        | true     | [tenki.jp](https://tenki.jp/) area code      |            |
 | ENDPOINT_URL     | true     | Webhook endpoint of Slack or Discord         | Use [Slack-Compatible webhook](https://discordapp.com/developers/docs/resources/webhook#execute-slackcompatible-webhook) to post to Discord. |
 | ICON_URL         | false    | Icon URL of this bot                         |            |
+| ONLY_TOMORROW    | false    | Send only tomorrow forecast when true        |            |
 
 ```bash
 # run

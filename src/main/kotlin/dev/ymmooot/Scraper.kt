@@ -18,7 +18,7 @@ class Scraper(var areaCode: String) {
     private val endpoint: URI
         get() = URI.create("$endpointBase$areaCode")
 
-    fun fetchForecast(): List<WeatherForecast> {
+    fun fetchForecast(onlyTomorrow: Boolean): List<WeatherForecast> {
         val request = HttpRequest
                 .newBuilder(this.endpoint)
                 .build()
@@ -29,12 +29,19 @@ class Scraper(var areaCode: String) {
         val areaName = extractAreaName(html)
         val publishedAt = extractPublishedAt(html)
 
-        return todayAndTomorrowForecast(html, areaName, publishedAt)
+        return if (onlyTomorrow) {
+            tomorrowForecast(html, areaName, publishedAt)
+        } else {
+            todayAndTomorrowForecast(html, areaName, publishedAt)
+        }
     }
 
     private fun todayAndTomorrowForecast(html: String, areaName: String, publishedAt: LocalDateTime): List<WeatherForecast> =
             listOf(".today-weather", ".tomorrow-weather")
                     .map { convertLargeSection(html, it, areaName, publishedAt) }
+
+    private fun tomorrowForecast(html: String, areaName: String, publishedAt: LocalDateTime): List<WeatherForecast> =
+            listOf(convertLargeSection(html, ".tomorrow-weather", areaName, publishedAt))
 
     private fun extractAreaName(html: String): String =
             Jsoup.parse(html)
