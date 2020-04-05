@@ -1,19 +1,19 @@
-package dev.ymmooot.sender
+package dev.ymmooot
 
-import dev.ymmooot.entity.WeatherForecast
+import dev.ymmooot.viewmodels.Body
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
 
-class DiscordAndSlack(private val endpoint: URI) : Sender() {
-    override fun send(forecasts: List<WeatherForecast>): String {
-        val body = this.toBodyJsonString(forecasts)
+class Sender(private val endpoint: URI) {
+    fun send(body: Body): String {
+        val bodyString = body.toJson()
         val request = HttpRequest.newBuilder()
                 .uri(this.endpoint)
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .POST(HttpRequest.BodyPublishers.ofString(bodyString))
                 .build()
         val bodyHandler = HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
         val response: HttpResponse<String> = HttpClient.newBuilder().build().send(request, bodyHandler)

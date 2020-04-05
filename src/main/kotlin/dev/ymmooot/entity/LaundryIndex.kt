@@ -10,7 +10,7 @@ enum class LaundryIndex(val value: Int) {
     FIVE(5);
 
     val image: URL
-        get() = URL("https://static.tenki.jp/images/icon/indexes/cloth_dried/icon-large-${this.value}.png")
+        get() = URL("https://static.tenki.jp/images/icon/indexes/cloth_dried/icon-large-$value.png")
 
     override fun toString(): String =
             when (this) {

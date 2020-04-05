@@ -1,19 +1,19 @@
 package dev.ymmooot
 
-import dev.ymmooot.sender.DiscordAndSlack
+import dev.ymmooot.entity.Env
+import dev.ymmooot.viewmodels.Body
 import java.net.URI
 import kotlin.system.exitProcess
 
-fun mustGetEnv(key: String): String =
-        System.getenv(key) ?: throw Exception("environmental variables not found: $key")
 
 fun main(args: Array<String>) {
-    val scraper = Scraper(mustGetEnv("AREA_CODE"))
-    val uri = mustGetEnv("SEND_URL")
-    val sender = DiscordAndSlack(URI.create(uri))
+    val env = Env()
+    val scraper = Scraper(env.areaCode)
+    val sender = Sender(URI.create(env.endpointURL))
     val response = try {
-        val forecast = scraper.fetchForecast()
-        sender.send(forecast)
+        val forecasts = scraper.fetchForecast()
+        val body = Body(forecasts, env.iconURL)
+        sender.send(body)
     } catch (e: Exception) {
         println(e)
         exitProcess(1)
