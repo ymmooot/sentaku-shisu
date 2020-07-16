@@ -101,12 +101,12 @@ sealed class Weather {
 
     open val emoji: String
         get() = when (this) {
-            SUNNY -> ":sunny:"
-            CLOUDY -> ":cloud:"
-            RAINY -> ":umbrella2:"
-            SNOW -> ":snowman:"
-            HEAVY_RAINY -> ":umbrella:"
-            HEAVY_SNOW -> ":snowman2:"
+            SUNNY -> "☀️"
+            CLOUDY -> "☁️"
+            RAINY -> "☂️"
+            SNOW -> "⛄"
+            HEAVY_RAINY -> "☔"
+            HEAVY_SNOW -> "☃️"
             else -> ""
         }
 }
